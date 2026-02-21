@@ -1,28 +1,23 @@
-FROM python:3.9-alpine
+FROM python:3.12-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app/backend
+WORKDIR /app
 
-# Install system dependencies (Alpine uses apk, not apt)
-RUN apk update && \
-    apk add --no-cache \
-        gcc \
-        musl-dev \
-        mariadb-connector-c-dev \
-        pkgconfig
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    mariadb-connector-c-dev \
+    pkgconfig
 
-# Install Python dependencies
 COPY requirements.txt .
 
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir mysqlclient && \
+RUN pip install --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
 COPY . .
 
 EXPOSE 8000
 
-CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "notesapp.wsgi:application", "--bind", "0.0.0.0:8000"]
