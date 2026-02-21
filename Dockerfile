@@ -1,28 +1,28 @@
-FROM python:3.9-slim
+FROM python:3.9-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app/backend
 
-# Install system dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+# Install system dependencies (Alpine uses apk, not apt)
+RUN apk update && \
+    apk add --no-cache \
         gcc \
-        default-libmysqlclient-dev \
-        pkg-config && \
-    rm -rf /var/lib/apt/lists/*
+        musl-dev \
+        mariadb-connector-c-dev \
+        pkgconfig
 
 # Install Python dependencies
-COPY requirements.txt /app/backend/
-RUN pip install --no-cache-dir mysqlclient && \
+COPY requirements.txt .
+
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir mysqlclient && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copy project files
-COPY . /app/backend
+COPY . .
 
 EXPOSE 8000
 
-# If needed: uncomment for migrations during build (not recommended)
-# RUN python manage.py migrate
-# RUN python manage.py makemigrations
+CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]
