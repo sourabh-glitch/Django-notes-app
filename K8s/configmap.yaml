@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notes-config
+  namespace: note-app
+data:
+  DB_NAME: "test_db"
+  DB_HOST: "db"
+  DB_PORT: "3306"

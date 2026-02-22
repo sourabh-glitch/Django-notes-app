@@ -8,7 +8,7 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     # ✅ Prometheus metrics endpoint (/metrics)
-    path("metrics/", include("django_prometheus.urls")),
+    path("", include("django_prometheus.urls")),
 
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),

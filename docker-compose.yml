@@ -1,10 +1,5 @@
-version: "3.8"
-
 services:
 
-  # --------------------------------------------------
-  # NGINX REVERSE PROXY
-  # --------------------------------------------------
   nginx:
     build: ./nginx
     image: custom_nginx:latest
@@ -17,9 +12,6 @@ services:
     networks:
       - notes-app-nw
 
-  # --------------------------------------------------
-  # DJANGO APPLICATION
-  # --------------------------------------------------
   django_app:
     build:
       context: .
@@ -34,7 +26,7 @@ services:
         gunicorn notesapp.wsgi:application --bind 0.0.0.0:8000
       "
     expose:
-      - "8000"     # only exposed to nginx
+      - "8000"
     depends_on:
       db:
         condition: service_healthy
@@ -48,18 +40,15 @@ services:
     networks:
       - notes-app-nw
 
-  # --------------------------------------------------
-  # MYSQL DATABASE
-  # --------------------------------------------------
   db:
     image: mysql:8.0
     container_name: db_cont
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: test_db
-      MYSQL_USER: testuser
-      MYSQL_PASSWORD: testpass
+      MYSQL_DATABASE: test_db  # Django DB_NAME
+      MYSQL_USER: root         # <--- use root
+      MYSQL_PASSWORD: root     # <--- use root
     volumes:
       - ./data/mysql/db:/var/lib/mysql
     restart: always
@@ -72,9 +61,6 @@ services:
     networks:
       - notes-app-nw
 
-# --------------------------------------------------
-# DOCKER NETWORK
-# --------------------------------------------------
 networks:
   notes-app-nw:
     driver: bridge
