@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: notes-app
-  namespace: note_app   # if using namespace
+  namespace: note-app   # if using namespace
 spec:
   replicas: 5        # <-- SET YOUR 5 REPLICAS HERE
   selector:
